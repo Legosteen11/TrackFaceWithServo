@@ -8,10 +8,16 @@ public class ServoPair {
     private Servo servoY;
     private int xPercentage;
     private int yPercentage;
+    private boolean complete;
     
     public ServoPair(Servo servoX, Servo servoY) {
         this.servoX = servoX;
         this.servoY = servoY;
+        this.complete = true;
+    }
+    
+    public ServoPair() {
+        this.complete = false;
     }
 
     public Servo getServoX() {
@@ -56,4 +62,10 @@ public class ServoPair {
         setxPercentage(percentages[0]);
         setyPercentage(percentages[1]);
     }
+    
+    public boolean isComplete() {
+        return complete;
+    }
+    
+    
 }

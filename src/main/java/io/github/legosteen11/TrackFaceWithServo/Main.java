@@ -1,5 +1,6 @@
 package io.github.legosteen11.TrackFaceWithServo;
 
+import com.github.sarxos.webcam.Webcam;
 import com.google.gson.Gson;
 import io.github.legosteen11.TrackFaceWithServo.Serial.SerialController;
 import io.github.legosteen11.TrackFaceWithServo.Servo.Servo;
@@ -23,6 +24,7 @@ public class Main {
     private boolean configure;
     private int delay;
     private boolean disableGson;
+    private Webcam webcam;
 
     public static void main(String[] args) {
         Main main = new Main(args);
@@ -31,8 +33,9 @@ public class Main {
     private Main(String[] args) {
         String serialPortName = "/dev/ttyUSB0";
         configure = false;
-        delay = 100;
+        delay = 1000;
         disableGson = false;
+        webcam = Webcam.getDefault();
 
         for (String argument :
                 args) {
@@ -62,7 +65,7 @@ public class Main {
         }
 
         // Create servo map from config names:
-        String[] servoNames = new String[]{"servoX"};
+        String[] servoNames = new String[]{"servoX", "servoY"};
         HashMap<String, Servo> servoHashMap = new HashMap<>();
         
         if(configure) {
@@ -145,6 +148,7 @@ public class Main {
                         objectOutputStream.writeObject(servoConfig);
                     }
                 } catch (FileNotFoundException e) {
+                    System.out.println("Make sure the file " + System.getProperty("user.home") + "/Documents/" + servo.getName() + "Config.txt" + " exists!");
                     e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -153,6 +157,7 @@ public class Main {
             
             scanner.close();
         } 
+        ServoPair servoPair = new ServoPair();
         for (String servoName :
                 servoNames) {
             try {
@@ -175,7 +180,14 @@ public class Main {
                 Servo servoObject = new Servo(servoConfig, servoName);
                 servoHashMap.put(servoName, servoObject);
                 
-
+                if(servoObject.getName().equals("servoX")) {
+                    servoPair.setServoX(servoObject);
+                } else if (servoObject.getName().equals("servoY")) {
+                    servoPair.setServoY(servoObject);
+                }
+                
+                servoPositionUpdater.addServo(servoObject);
+                
                 System.out.println("Created a new servo with name: " + servoName + ", and config url: " + configUrl);
 
                 System.out.println("These are your current settings for servo " + servoObject.getName() + ":");
@@ -191,15 +203,13 @@ public class Main {
             }
         }
 
-        ServoPair servoPair = new ServoPair(servoHashMap.get("servoX"), servoHashMap.get("servoY"));
-
         FaceFinder faceFinder = new FaceFinder(1, 40);
         
         boolean stop = false;
         while (!stop) {
             try {
-                int[] percentages = faceFinder.findFaces(ImageIO.read(new File("/home/wouter/Pictures/lul.jpg")));
-                
+                int[] percentages = faceFinder.findFaces(webcam.getImage());
+                System.out.println("Setting X to: " + percentages[0] + "%, Y to: " + percentages[1] + "%");
                 servoPair.setPercentages(percentages);
                 servoPositionUpdater.updatePositions();
             } catch (IOException e) {

@@ -45,29 +45,29 @@ public class FaceFinder {
 
             List results = detectHaar.pushAndReturn(toGray.getFront());
             Rect detectedFace = (Rect) results.get(0);
-            System.out.println("Found " + results.size() + " faces");
+            //System.out.println("Found " + results.size() + " faces");
 
             int totalWidth = im.getWidth();
             int totalHeight = im.getHeight();
-            System.out.println("Total width of image is: " + totalWidth + ", total height is: " + totalHeight);
+            //System.out.println("Total width of image is: " + totalWidth + ", total height is: " + totalHeight);
 
             int topLeftX = detectedFace.getTopLeft().getX();
             int topLeftY = detectedFace.getTopLeft().getY();
             int bottomRightX = detectedFace.getBottomRight().getX();
             int bottomRightY = detectedFace.getBottomRight().getY();
-            System.out.println("Top left x: " + topLeftX + ", top left y: " + topLeftY);
-            System.out.println("Bottom right x: " + bottomRightX + ", bottom right y: " + bottomRightY);
+            //System.out.println("Top left x: " + topLeftX + ", top left y: " + topLeftY);
+            //System.out.println("Bottom right x: " + bottomRightX + ", bottom right y: " + bottomRightY);
 
             int averageX = Math.round((bottomRightX + topLeftX) / 2);
             int averageY = Math.round((bottomRightY + topLeftY) / 2);
-            System.out.println("Average x of face is: " + averageX + ", average y of face is: " + averageY);
+            //System.out.println("Average x of face is: " + averageX + ", average y of face is: " + averageY);
 
             int averageXPercentage = ((averageX * 100) / totalWidth);
             int averageYPercentage = ((averageY * 100) / totalHeight);
-            System.out.println("Average x position is on " + averageXPercentage + "%, average y position is on " + averageYPercentage + "%.");
+            //System.out.println("Average x position is on " + averageXPercentage + "%, average y position is on " + averageYPercentage + "%.");
 
             int servoHeightPercentage = 100 - averageYPercentage;
-            System.out.println("So that means that the height of the servo should be " + servoHeightPercentage + "%.");
+            //System.out.println("So that means that the height of the servo should be " + servoHeightPercentage + "%.");
             
             return new int[]{averageXPercentage, servoHeightPercentage};
         } catch (Throwable e) {

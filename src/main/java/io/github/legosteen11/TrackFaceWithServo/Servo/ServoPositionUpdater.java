@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 public class ServoPositionUpdater {
     private ArrayList<Servo> servoList;
     private OutputStream outputStream;
+    private Date lastDate;
     private int delay;
 
     /**
@@ -37,6 +38,7 @@ public class ServoPositionUpdater {
         this.servoList = new ArrayList<>();
         this.outputStream = outputStream;
         this.delay = delay;
+        this.lastDate = new Date();
     }
 
     /**
@@ -53,6 +55,7 @@ public class ServoPositionUpdater {
     public void updatePositions() throws InterruptedException, IOException {
         for (Servo servo :
                 servoList) {
+            System.out.println("Sending: " + (servo.getName() + servo.getCurrentPosition()));
             outputStream.write((servo.getName() + servo.getCurrentPosition()).getBytes());
             TimeUnit.MILLISECONDS.sleep(delay);
         }
