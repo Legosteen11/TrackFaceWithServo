@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Enumeration;
+import java.util.TooManyListenersException;
 
 
 public class SerialController implements SerialPortEventListener {
@@ -68,8 +69,8 @@ public class SerialController implements SerialPortEventListener {
             output = serialPort.getOutputStream();
             
             // add event listeners
-            // serialPort.addEventListener(this);
-            // serialPort.notifyOnDataAvailable(true);
+            serialPort.addEventListener(this);
+            serialPort.notifyOnDataAvailable(true);
             
         } catch (PortInUseException e) {
             System.out.println("Port is already in use...");
@@ -77,6 +78,8 @@ public class SerialController implements SerialPortEventListener {
         } catch (UnsupportedCommOperationException e) {
             e.printStackTrace();
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (TooManyListenersException e) {
             e.printStackTrace();
         }
     }

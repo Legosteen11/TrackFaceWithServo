@@ -19,6 +19,17 @@ public class Servo {
     }
 
     /**
+     * Creates a Servo object with default config.
+     * @param name
+     */
+    public Servo(String name) {
+        this.config = new ServoConfig();
+        config.addValueForPercentage(0, 0);
+        config.addValueForPercentage(100, 180);
+        this.name = name;
+    }
+
+    /**
      * Set's the position for the servo to update to.
      * @param position Position to go to.
      */
@@ -48,5 +59,21 @@ public class Servo {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Returns the current config
+     * @return the current config
+     */
+    public ServoConfig getConfig() {
+        return config;
+    }
+
+    /**
+     * Set's the current config
+     * @param config config to set config to.
+     */
+    public void setConfig(ServoConfig config) {
+        this.config = config;
     }
 }

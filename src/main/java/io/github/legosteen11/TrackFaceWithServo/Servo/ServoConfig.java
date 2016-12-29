@@ -1,5 +1,7 @@
 package io.github.legosteen11.TrackFaceWithServo.Servo;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.HashMap;
 
@@ -11,13 +13,14 @@ public class ServoConfig implements Serializable {
      * HashMap containing calibrated data:
      * First is percentage, second is calibrated value.
      */
-    private HashMap<Integer, Integer> calibratedValuesMap;
+    @SerializedName("calibrated-values")
+    private HashMap<String, Integer> calibratedValuesMap;
 
     /**
      * Creates a new ServoConfig object with calibratedValuesMap
      * @param calibratedValuesMap HashMap<Integer, Integer>, first value is the percentage, second is the calibrated value for that percentage.
      */
-    public ServoConfig(HashMap<Integer, Integer> calibratedValuesMap) {
+    public ServoConfig(HashMap<String, Integer> calibratedValuesMap) {
         this.calibratedValuesMap = calibratedValuesMap;
     }
 
@@ -49,7 +52,7 @@ public class ServoConfig implements Serializable {
         return (closestValues[1] - closestValues[0]) * (percentage / 100) + closestValues[0];
     }
     
-    private int[] findClosestValues(int value, HashMap<Integer, Integer> map){
+    private int[] findClosestValues(int value, HashMap<String, Integer> map){
         if(map == null || map.values().size() == 0){
             return null;
         }
@@ -85,14 +88,14 @@ public class ServoConfig implements Serializable {
         if(percentage < 0 || percentage > 180 || value < 0 || value > 180){
             return;
         }
-        calibratedValuesMap.put(percentage, value);
+        calibratedValuesMap.put(percentage + "", value);
     }
 
     /**
      * Returns the calibratedValuesMap
      * @return calibratedValuesMap
      */
-    public HashMap<Integer, Integer> getCalibratedValuesMap() {
+    public HashMap<String, Integer> getCalibratedValuesMap() {
         return calibratedValuesMap;
     }
 
@@ -100,7 +103,7 @@ public class ServoConfig implements Serializable {
      * Sets the calibratedValuesMap
      * @param calibratedValuesMap HashMap<Integer, Integer>, first value is the percentage, second is the calibrated value for that percentage.
      */
-    public void setCalibratedValuesMap(HashMap<Integer, Integer> calibratedValuesMap) {
+    public void setCalibratedValuesMap(HashMap<String, Integer> calibratedValuesMap) {
         this.calibratedValuesMap = calibratedValuesMap;
     }
 }

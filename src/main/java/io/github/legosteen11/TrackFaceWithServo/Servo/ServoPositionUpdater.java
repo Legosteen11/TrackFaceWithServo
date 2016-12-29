@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -56,4 +57,27 @@ public class ServoPositionUpdater {
             TimeUnit.MILLISECONDS.sleep(delay);
         }
     }
+
+    /**
+     * Updates the positions of the servo's
+     */
+    public void updatePositionsWithoutDelay() throws InterruptedException, IOException {
+        for (Servo servo :
+                servoList) {
+            outputStream.write((servo.getName() + servo.getCurrentPosition()).getBytes());
+        }
+    }
+
+    /**
+     * Get a diff between two dates
+     * @param date1 the oldest date
+     * @param date2 the newest date
+     * @param timeUnit the unit in which you want the diff
+     * @return the diff value, in the provided unit
+     */
+    private long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
+        long diffInMillies = date2.getTime() - date1.getTime();
+        return timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
+    }
+    
 }
