@@ -218,6 +218,8 @@ public class Main {
                 e.printStackTrace();
             }
         }
+        
+        stop();
     }
     
     public void stop() {

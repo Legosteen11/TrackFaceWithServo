@@ -7,6 +7,13 @@
     <groupId>io.github.legosteen11</groupId>
     <artifactId>TrackFaceWithServo</artifactId>
     <version>1.0-SNAPSHOT</version>
+    
+    <repositories>
+        <repository>
+            <id>local-maven-repo</id>
+            <url>file:///${project.basedir}/local-maven-repo</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.rxtx/rxtx -->
@@ -15,20 +22,18 @@
             <artifactId>rxtx</artifactId>
             <version>2.1.7</version>
         </dependency>
-
+        
         <!-- jjil -->
         <dependency>
-            <groupId>jjil.core</groupId>
-            <artifactId>jjil</artifactId>
-            <scope>system</scope>
-            <systemPath>${basedir}/JJILCore.jar</systemPath>
+            <groupId>jjil</groupId>
+            <artifactId>jjil.core</artifactId>
+            <version>0.1.0</version>
         </dependency>
         <!-- jjil j2se -->
         <dependency>
-            <groupId>jjil.j2se</groupId>
-            <artifactId>jjil</artifactId>
-            <scope>system</scope>
-            <systemPath>${basedir}/JJIL-J2SE.jar</systemPath>
+            <groupId>jjil</groupId>
+            <artifactId>jjil.j2se</artifactId>
+            <version>0.1.0</version>
         </dependency>
 
         <!-- Google GSON -->
@@ -79,5 +84,19 @@
                 </configuration>
             </plugin>
         </plugins>
+        
+        <!-- Resources -->
+        <resources>
+            <resource>
+                <targetPath>.</targetPath>
+                <filtering>true</filtering>
+                <directory>${basedir}/src/main/resources/</directory>
+                <includes>
+                    <include>faceDetectHaar.txt</include>
+                    <include>JJIL-J2SE.jar</include>
+                    <include>JJILCore.jar</include>
+                </includes>
+            </resource>
+        </resources>
     </build>
 </project>

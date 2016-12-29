@@ -32,24 +32,8 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="Maven: org.rxtx:rxtx:2.1.7" level="project" />
-    <orderEntry type="module-library">
-      <library name="Maven: jjil.core:jjil:unknown">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/JJILCore.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="Maven: jjil.j2se:jjil:unknown">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/JJIL-J2SE.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
+    <orderEntry type="library" name="Maven: jjil:jjil.core:0.1.0" level="project" />
+    <orderEntry type="library" name="Maven: jjil:jjil.j2se:0.1.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.0" level="project" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.5" level="project" />
     <orderEntry type="library" name="Maven: com.github.sarxos:webcam-capture:0.3.10" level="project" />
