@@ -24,6 +24,7 @@ public class JjilTest {
             RgbImage im = RgbImageJ2se.toRgbImage(bi);
             RgbAvgGray toGray = new RgbAvgGray();
             toGray.push(im);
+            
             List results = detectHaar.pushAndReturn(toGray.getFront());
             Rect detectedFace = (Rect) results.get(0);
             System.out.println("Found " + results.size() + " faces");

@@ -1,6 +1,7 @@
 package io.github.legosteen11.TrackFaceWithServo.Serial;
 
 import gnu.io.*;
+import io.github.legosteen11.TrackFaceWithServo.Servo.ServoPositionUpdater;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -70,8 +71,6 @@ public class SerialController implements SerialPortEventListener {
             // serialPort.addEventListener(this);
             // serialPort.notifyOnDataAvailable(true);
             
-            
-            
         } catch (PortInUseException e) {
             System.out.println("Port is already in use...");
             e.printStackTrace();
@@ -91,6 +90,10 @@ public class SerialController implements SerialPortEventListener {
             serialPort.removeEventListener();
             serialPort.close();
         }
+    }
+    
+    public OutputStream getOutput() throws IOException {
+        return serialPort.getOutputStream();
     }
 
     /**
