@@ -1,5 +1,6 @@
 package io.github.legosteen11.TrackFaceWithServo.Vision;
 
+import io.github.legosteen11.TrackFaceWithServo.Main;
 import jjil.algorithm.Gray8Rgb;
 import jjil.algorithm.RgbAvgGray;
 import jjil.core.Image;
@@ -44,32 +45,38 @@ public class FaceFinder {
             toGray.push(im);
 
             List results = detectHaar.pushAndReturn(toGray.getFront());
-            Rect detectedFace = (Rect) results.get(0);
-            //System.out.println("Found " + results.size() + " faces");
+            if (results.size() > 0) {
+                Rect detectedFace = (Rect) results.get(0);
+                //System.out.println("Found " + results.size() + " faces");
+    
+                int totalWidth = im.getWidth();
+                int totalHeight = im.getHeight();
+                //System.out.println("Total width of image is: " + totalWidth + ", total height is: " + totalHeight);
+    
+                int topLeftX = detectedFace.getTopLeft().getX();
+                int topLeftY = detectedFace.getTopLeft().getY();
+                int bottomRightX = detectedFace.getBottomRight().getX();
+                int bottomRightY = detectedFace.getBottomRight().getY();
+                //System.out.println("Top left x: " + topLeftX + ", top left y: " + topLeftY);
+                //System.out.println("Bottom right x: " + bottomRightX + ", bottom right y: " + bottomRightY);
+    
+                int averageX = Math.round((bottomRightX + topLeftX) / 2);
+                int averageY = Math.round((bottomRightY + topLeftY) / 2);
+                //System.out.println("Average x of face is: " + averageX + ", average y of face is: " + averageY);
+    
+                int averageXPercentage = ((averageX * 100) / totalWidth);
+                int averageYPercentage = ((averageY * 100) / totalHeight);
+                //System.out.println("Average x position is on " + averageXPercentage + "%, average y position is on " + averageYPercentage + "%.");
+    
+                int servoHeightPercentage = 100 - averageYPercentage;
+                //System.out.println("So that means that the height of the servo should be " + servoHeightPercentage + "%.");
 
-            int totalWidth = im.getWidth();
-            int totalHeight = im.getHeight();
-            //System.out.println("Total width of image is: " + totalWidth + ", total height is: " + totalHeight);
-
-            int topLeftX = detectedFace.getTopLeft().getX();
-            int topLeftY = detectedFace.getTopLeft().getY();
-            int bottomRightX = detectedFace.getBottomRight().getX();
-            int bottomRightY = detectedFace.getBottomRight().getY();
-            //System.out.println("Top left x: " + topLeftX + ", top left y: " + topLeftY);
-            //System.out.println("Bottom right x: " + bottomRightX + ", bottom right y: " + bottomRightY);
-
-            int averageX = Math.round((bottomRightX + topLeftX) / 2);
-            int averageY = Math.round((bottomRightY + topLeftY) / 2);
-            //System.out.println("Average x of face is: " + averageX + ", average y of face is: " + averageY);
-
-            int averageXPercentage = ((averageX * 100) / totalWidth);
-            int averageYPercentage = ((averageY * 100) / totalHeight);
-            //System.out.println("Average x position is on " + averageXPercentage + "%, average y position is on " + averageYPercentage + "%.");
-
-            int servoHeightPercentage = 100 - averageYPercentage;
-            //System.out.println("So that means that the height of the servo should be " + servoHeightPercentage + "%.");
-            
-            return new int[]{averageXPercentage, servoHeightPercentage};
+                if(Main.isVerbose()) System.out.println("Found face at: " + servoHeightPercentage + "% height and " + averageXPercentage + "% width!");
+    
+                return new int[]{averageXPercentage, servoHeightPercentage};
+            } else {
+                return new int[]{-1,-1};
+            }
         } catch (Throwable e) {
             throw new IllegalStateException(e);
         }

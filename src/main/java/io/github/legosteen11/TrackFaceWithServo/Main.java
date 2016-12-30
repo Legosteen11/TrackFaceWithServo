@@ -11,6 +11,7 @@ import io.github.legosteen11.TrackFaceWithServo.Vision.FaceFinder;
 import org.apache.commons.io.FileUtils;
 
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -25,6 +26,7 @@ public class Main {
     private int delay;
     private boolean disableGson;
     private Webcam webcam;
+    private static boolean verbose;
 
     public static void main(String[] args) {
         Main main = new Main(args);
@@ -35,7 +37,7 @@ public class Main {
         configure = false;
         delay = 1000;
         disableGson = false;
-        webcam = Webcam.getDefault();
+        verbose = false;
 
         for (String argument :
                 args) {
@@ -53,6 +55,9 @@ public class Main {
             }
             if(argument.equals("json=off")) {
                 disableGson = true;
+            }
+            if(argument.equals("verbose")){
+                verbose = true;
             }
         }
         
@@ -161,14 +166,14 @@ public class Main {
         for (String servoName :
                 servoNames) {
             try {
-                System.out.println("Loading config for servo " + servoName);
+                if(verbose) System.out.println("Loading config for servo " + servoName);
                 String configUrl = System.getProperty("user.home") + "/Documents/" + servoName + "Config.txt";
                 
                 ServoConfig servoConfig;
                 if(!disableGson) {
                     String fileContent = FileUtils.readFileToString(new File(configUrl), "UTF-8");
                     Gson gson = new Gson();
-                    System.out.println("JSON: " + fileContent);
+                    if(verbose) System.out.println("JSON: " + fileContent);
                     servoConfig = gson.fromJson(fileContent, ServoConfig.class);
                 } else {
                     FileInputStream fileInputStream = new FileInputStream(configUrl);
@@ -187,8 +192,8 @@ public class Main {
                 }
                 
                 servoPositionUpdater.addServo(servoObject);
-                
-                System.out.println("Created a new servo with name: " + servoName + ", and config url: " + configUrl);
+                printDashes();
+                if(verbose) System.out.println("Created a new servo with name: " + servoName + ", and config url: " + configUrl);
 
                 System.out.println("These are your current settings for servo " + servoObject.getName() + ":");
                 for(int i = 0; i <= 100; i = i + 25) {
@@ -206,12 +211,26 @@ public class Main {
         FaceFinder faceFinder = new FaceFinder(1, 40);
         
         boolean stop = false;
+        printDashes();
+        System.out.println("Opening webcam...");
+        webcam = Webcam.getDefault();
+        webcam.open();
+        System.out.println("Opened webcam.");
+        printDashes();
         while (!stop) {
             try {
-                int[] percentages = faceFinder.findFaces(webcam.getImage());
-                System.out.println("Setting X to: " + percentages[0] + "%, Y to: " + percentages[1] + "%");
-                servoPair.setPercentages(percentages);
-                servoPositionUpdater.updatePositions();
+                BufferedImage bufferedImage = webcam.getImage();
+                int[] percentages = faceFinder.findFaces(bufferedImage);
+                if (percentages[0] != -1 && percentages[1] != -1) {
+                    if(verbose) System.out.println("Setting X to: " + percentages[0] + "%, Y to: " + percentages[1] + "%");
+                    if(verbose) System.out.println("X: " + servoPair.getServoX().getConfig().getValueForPercentage(percentages[0]) + ". Y: " + servoPair.getServoY().getConfig().getValueForPercentage(percentages[0]));
+                    servoPair.setPercentages(percentages);
+                    servoPositionUpdater.updatePositions();
+                    for (Servo servo :
+                            servoPositionUpdater.getServos()) {
+                        if(verbose) System.out.println("Servo " + servo.getName() + " on position " + servo.getCurrentPosition());
+                    }
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
@@ -224,6 +243,7 @@ public class Main {
     
     public void stop() {
         serialController.close();
+        webcam.close();
     }
 
     private boolean isInteger(String s) {
@@ -244,5 +264,13 @@ public class Main {
     
     private void printDashes() {
         System.out.println("-------------------------------");
+    }
+
+    public static boolean isVerbose() {
+        return verbose;
+    }
+
+    public static void setVerbose(boolean verbose) {
+        Main.verbose = verbose;
     }
 }

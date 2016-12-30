@@ -3,6 +3,8 @@ package io.github.legosteen11.TrackFaceWithServo.Servo;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -14,21 +16,21 @@ public class ServoConfig implements Serializable {
      * First is percentage, second is calibrated value.
      */
     @SerializedName("calibrated-values")
-    private HashMap<String, Integer> calibratedValuesMap;
+    private ArrayList<CalibratedValue> calibratedValues;
 
     /**
-     * Creates a new ServoConfig object with calibratedValuesMap
-     * @param calibratedValuesMap HashMap<Integer, Integer>, first value is the percentage, second is the calibrated value for that percentage.
+     * Create a new ServoConfig object with default calibratedValues
      */
-    public ServoConfig(HashMap<String, Integer> calibratedValuesMap) {
-        this.calibratedValuesMap = calibratedValuesMap;
+    public ServoConfig() {
+        this.calibratedValues = new ArrayList<CalibratedValue>();
     }
 
     /**
-     * Creates a new ServoConfig object with empty calibratedValuesMap.
+     * Creates a new ServoConfig object with calibratedValues set
+     * @param calibratedValues CalibratedValues array
      */
-    public ServoConfig(){
-        this.calibratedValuesMap = new HashMap<>();
+    public ServoConfig(CalibratedValue[] calibratedValues) {
+        this.calibratedValues = new ArrayList<>(Arrays.asList(calibratedValues));
     }
 
     /**
@@ -38,45 +40,51 @@ public class ServoConfig implements Serializable {
      */
     public int getValueForPercentage(int percentage) {
         // Percentage is already in calibratedValuesMap;
-        if(calibratedValuesMap.containsKey(percentage)) {
-            return calibratedValuesMap.get(percentage);
-        }
-        
-        int[] closestValues = findClosestValues(percentage, calibratedValuesMap);
-        
-        if(closestValues[0] == Integer.MIN_VALUE || closestValues[1] == Integer.MAX_VALUE) {
-            return 50;
-        }
-        
-        // (highestValue - lowestValue) * (percentage / 100%) + lowestValue 
-        return (closestValues[1] - closestValues[0]) * (percentage / 100) + closestValues[0];
-    }
-    
-    private int[] findClosestValues(int value, HashMap<String, Integer> map){
-        if(map == null || map.values().size() == 0){
-            return null;
-        }
-        
-        int highValue = Integer.MAX_VALUE;
-        int lowValue = Integer.MIN_VALUE;
-        
-        
-        for (int currentValue :
-                map.values()) {
-            if(currentValue > value && currentValue < highValue) {
-                highValue = currentValue;
-            } else if(currentValue < value && currentValue > lowValue) {
-                lowValue = currentValue;
+        for (CalibratedValue calibratedValue :
+                calibratedValues) {
+            if (calibratedValue.getPercentage() == percentage) {
+                return calibratedValue.getCalibratedValue();
             }
         }
         
-        if(lowValue == Integer.MIN_VALUE) {
-            lowValue = value;
-        } else if(highValue == Integer.MAX_VALUE) {
-            highValue = value;
+        CalibratedValue[] closestValues = findClosestValues(percentage, calibratedValues);
+        
+        int lowestCalibratedValue;
+        int highestCalibratedValue;
+        
+        if(closestValues[0].getCalibratedValue() > closestValues[1].getCalibratedValue()) {
+            lowestCalibratedValue = closestValues[1].getCalibratedValue();
+            highestCalibratedValue = closestValues[0].getCalibratedValue();
+        } else {
+            lowestCalibratedValue = closestValues[0].getCalibratedValue();
+            highestCalibratedValue = closestValues[1].getCalibratedValue();
         }
         
-        return new int[]{lowValue, highValue};
+        // (highestValue - lowestValue) * (percentage / 100%) + lowestValue
+        float percentageToMultiplyBy = (float)percentage / 100;
+        
+        int returnValue = (int) Math.ceil(((highestCalibratedValue - lowestCalibratedValue) * percentageToMultiplyBy) + lowestCalibratedValue);
+        return returnValue;
+    }
+    
+    private CalibratedValue[] findClosestValues(int value, ArrayList<CalibratedValue> calibratedValues){
+        if(calibratedValues.size() == 0){
+            return null;
+        }
+        
+        CalibratedValue highValue = new CalibratedValue(100, 180);
+        CalibratedValue lowValue = new CalibratedValue(0, 0);
+
+        for (CalibratedValue calibratedValue :
+                calibratedValues) {
+            if(calibratedValue.getPercentage() > value && calibratedValue.getPercentage() < highValue.getPercentage()) {
+                highValue = calibratedValue;
+            } else if(calibratedValue.getPercentage() < value && calibratedValue.getPercentage() > lowValue.getPercentage()) {
+                lowValue = calibratedValue;
+            }
+        }
+        
+        return new CalibratedValue[]{lowValue, highValue};
     }
 
     /**
@@ -88,22 +96,22 @@ public class ServoConfig implements Serializable {
         if(percentage < 0 || percentage > 180 || value < 0 || value > 180){
             return;
         }
-        calibratedValuesMap.put(percentage + "", value);
+        calibratedValues.add(new CalibratedValue(percentage, value));
     }
 
     /**
-     * Returns the calibratedValuesMap
-     * @return calibratedValuesMap
+     * Returns the calibratedValues array
+     * @return Returns the calibratedValues array
      */
-    public HashMap<String, Integer> getCalibratedValuesMap() {
-        return calibratedValuesMap;
+    public CalibratedValue[] getCalibratedValues() {
+        return calibratedValues.toArray(new CalibratedValue[0]);
     }
 
     /**
-     * Sets the calibratedValuesMap
-     * @param calibratedValuesMap HashMap<Integer, Integer>, first value is the percentage, second is the calibrated value for that percentage.
+     * Set's the calibratedValues array
+     * @param calibratedValues Calibrated values array to set.
      */
-    public void setCalibratedValuesMap(HashMap<String, Integer> calibratedValuesMap) {
-        this.calibratedValuesMap = calibratedValuesMap;
+    public void setCalibratedValues(CalibratedValue[] calibratedValues) {
+        this.calibratedValues = new ArrayList<>(Arrays.asList(calibratedValues));
     }
 }

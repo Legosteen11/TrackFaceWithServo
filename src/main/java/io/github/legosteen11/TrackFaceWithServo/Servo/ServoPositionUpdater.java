@@ -1,5 +1,7 @@
 package io.github.legosteen11.TrackFaceWithServo.Servo;
 
+import io.github.legosteen11.TrackFaceWithServo.Main;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.Clock;
@@ -55,9 +57,9 @@ public class ServoPositionUpdater {
     public void updatePositions() throws InterruptedException, IOException {
         for (Servo servo :
                 servoList) {
-            System.out.println("Sending: " + (servo.getName() + servo.getCurrentPosition()));
+            if(Main.isVerbose()) System.out.println("Sending: " + (servo.getName() + servo.getCurrentPosition()));
             outputStream.write((servo.getName() + servo.getCurrentPosition()).getBytes());
-            TimeUnit.MILLISECONDS.sleep(delay);
+            Thread.sleep(delay);
         }
     }
 
@@ -81,6 +83,14 @@ public class ServoPositionUpdater {
     private long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
         long diffInMillies = date2.getTime() - date1.getTime();
         return timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Returns an array containing all the servo's that this controller controls
+     * @return All Servo objects this controller controls
+     */
+    public Servo[] getServos() {
+        return servoList.toArray(new Servo[0]);
     }
     
 }

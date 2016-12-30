@@ -1,6 +1,7 @@
 package io.github.legosteen11.TrackFaceWithServo.Serial;
 
 import gnu.io.*;
+import io.github.legosteen11.TrackFaceWithServo.Main;
 import io.github.legosteen11.TrackFaceWithServo.Servo.ServoPositionUpdater;
 
 import java.io.BufferedReader;
@@ -106,7 +107,7 @@ public class SerialController implements SerialPortEventListener {
         if (oEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
             try {
                 String inputLine=input.readLine();
-                System.out.println("Read: " + inputLine);
+                if(Main.isVerbose()) System.out.println("Read: " + inputLine);
             } catch (Exception e) {
                 System.err.println(e.toString());
             }
